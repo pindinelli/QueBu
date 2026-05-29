@@ -1,0 +1,42 @@
+{
+  "name": "pindinelli/quebu",
+  "description": "A simple PHP Query Builder.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "php",
+    "query-builder",
+    "pdo",
+    "sql",
+    "database"
+  ],
+  "authors": [
+    {
+      "name": "Alessandro Pindinelli"
+    }
+  ],
+  "support": {
+    "security": "mailto:pindinelli@gmail.com"
+  },
+  "require": {
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "vlucas/phpdotenv": "^5.6",
+    "phpunit/phpunit": "^10.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Pindinelli\\Quebu\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Pindinelli\\Quebu\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "coverage": "vendor/bin/phpunit --coverage-html build/coverage"
+  }
+}
