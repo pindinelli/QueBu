@@ -59,42 +59,11 @@ $users = DB::from('users')
 print_r($users);
 ```
 
-#### With Composer (Recommended for Modern Projects)
+#### Composer Note
 
-If your project already uses Composer, this is the standard approach. Once QueBu is published, you can add it as a dependency.
+QueBu is currently intended to be used locally (copy `src/` + `autoload.php`) and is **not published on Packagist**.
 
-1.  **Install QueBu via Composer:**
-    ```bash
-    # This command will be available once the package is published on Packagist
-    composer require pindinelli/quebu
-    ```
-
-2.  **Use Composer's Autoloader:**
-    Include `vendor/autoload.php`. This allows you to seamlessly use QueBu alongside other libraries. For loading environment variables, it's common to use a dedicated package like `vlucas/phpdotenv`.
-
-    ```php
-    <?php
-    require __DIR__ . '/vendor/autoload.php';
-
-    use Pindinelli\Quebu\DB;
-    use Pindinelli\Quebu\Enums\Operators;
-    use Dotenv\Dotenv;
-
-    // 1. Load environment variables
-    $dotenv = Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
-
-    // 2. Build DSN and connect
-    $dsn = sprintf(
-        "%s:host=%s;port=%s;dbname=%s;charset=%s",
-        $_ENV['DB_CONNECTION'], $_ENV['DB_HOST'], $_ENV['DB_PORT'], $_ENV['DB_DATABASE'], $_ENV['DB_CHARSET']
-    );
-    DB::connect($dsn, $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']);
-
-    // 3. Start building queries!
-    $users = DB::from('users')->get();
-    print_r($users);
-    ```
+If your application already uses Composer, you can still include QueBu manually and keep using Composer for the rest of your app dependencies.
 
 ---
 
