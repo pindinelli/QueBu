@@ -380,7 +380,9 @@ class DB implements
 
         foreach ($conditions as $index => $clause) {
             [$expression, $values] = $this->buildConditionExpression($clause);
-            $localValues = array_merge($localValues, $values);
+            foreach ($values as $value) {
+                $localValues[] = $value;
+            }
 
             $expressions[] =
                 $index === 0
@@ -388,7 +390,9 @@ class DB implements
                     : "{$clause->type->value} {$expression}";
         }
 
-        $this->values = array_merge($this->values, $localValues);
+        foreach ($localValues as $value) {
+            $this->values[] = $value;
+        }
 
         return " {$clauseType} " . implode(" ", $expressions);
     }
