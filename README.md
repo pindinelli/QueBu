@@ -4,17 +4,17 @@
 
 QueBu is a lightweight, dependency-free SQL query builder for PHP. It offers a clean, fluent API to build complex queries programmatically without the overhead of heavy ORMs.
 
-### 🎯 Why QueBu?
- In many scenarios, such as micro-tools, CLI scripts, or legacy shared hosting—installing a full-blown ORM is often overkill or technically impossible. QueBu bridges this gap by providing:
+### Why QueBu?
+In many scenarios, such as micro-tools, CLI scripts, or legacy shared hosting, installing a full-blown ORM is often overkill or technically impossible. QueBu bridges this gap by providing:
 
-*   **Zero Dependencies for Production:** No `vendor` bloat. Pure, optimized PHP.
-*   **Standalone Autoloader:** Works out-of-the-box in restricted environments without Composer.
-*   **Security First:** Automatically uses prepared statements to prevent SQL Injection.
-*   **Minimal Memory Footprint:** Built for performance in resource-constrained environments.
+- **Zero Dependencies for Production:** No `vendor` bloat. Pure, optimized PHP.
+- **Standalone Autoloader:** Works out-of-the-box in restricted environments without Composer.
+- **Security First:** Automatically uses prepared statements to prevent SQL Injection.
+- **Minimal Memory Footprint:** Built for performance in resource-constrained environments.
 
 ---
 
-### 🛠 Installation and Usage
+### Installation and Usage
 
 This is the primary, zero-dependency method for using QueBu in any project.
 
@@ -118,7 +118,7 @@ DB::from('users')->andWhere('name', Operators::EQUAL, 'Ginevra Verdi')->delete()
 
 ---
 
-### 🔬 Development and Testing
+### Development and Testing
 
 While the library itself has no production dependencies, **Composer is used for development** to manage testing tools like PHPUnit.
 
