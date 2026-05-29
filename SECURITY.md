@@ -11,15 +11,15 @@
 
 Please do **not** open a public issue for security vulnerabilities.
 
-Report privately by email to: **pindinelli@gmail.com**
+Use GitHub's **Private Vulnerability Reporting** feature in this repository:
+- Go to the **Security** tab
+- Click **Report a vulnerability**
 
 Include:
 - A clear description of the issue
 - Steps to reproduce / PoC
 - Impact assessment
 - Suggested fix (if available)
-
-You will receive an acknowledgment within **72 hours**.
 
 ## Security Notes
 

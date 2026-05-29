@@ -16,7 +16,7 @@
     }
   ],
   "support": {
-    "security": "mailto:pindinelli@gmail.com"
+    "security": "https://github.com/pindinelli/QueBu/security/policy"
   },
   "require": {
     "php": ">=8.1"
