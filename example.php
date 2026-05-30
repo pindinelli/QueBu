@@ -37,126 +37,128 @@ try {
     DB::connect($config->dsn, $config->user, $config->password);
 
     // 1) toSql()
-    $sqlPreview = DB::from("users")
-        ->select("id", "name", "email")
-        ->andWhere("name", Operators::LIKE, "M%")
+    $sqlPreview = DB::from("test_items")
+        ->select("id", "name", "value")
+        ->andWhere("value", Operators::GREATER_THAN, 75)
         ->orderBy("id", SortDirection::DESC)
         ->limit(5)
         ->toSql();
     printBlock("1) SQL Preview (toSql)", $sqlPreview);
 
     // 2) SELECT + AND WHERE + OR WHERE + ORDER BY + LIMIT/OFFSET + get()
-    $usersFiltered = DB::from("users")
-        ->select("id", "name", "email", "registration_date")
-        ->andWhere("name", Operators::LIKE, "M%")
-        ->orWhere("name", Operators::LIKE, "A%")
+    $itemsFiltered = DB::from("test_items")
+        ->select("id", "name", "description", "value", "category_id")
+        ->andWhere("value", Operators::GREATER_THAN, 75)
+        ->orWhere("name", Operators::EQUAL, "Item B")
         ->orderBy("id", SortDirection::ASC)
         ->limit(10, 0)
         ->get();
-    printBlock("2) Filtered users (get)", $usersFiltered);
+    printBlock("2) Filtered items (get)", $itemsFiltered);
 
     // 3) first()
-    $firstUser = DB::from("users")->orderBy("id", SortDirection::ASC)->first();
-    printBlock("3) First user (first)", $firstUser);
+    $firstItem = DB::from("test_items")
+        ->orderBy("id", SortDirection::ASC)
+        ->first();
+    printBlock("3) First item (first)", $firstItem);
 
-    // 4) JOIN (self-join demo, so no extra table is required)
-    // Pair each user with users having a greater id.
-    $joinedUsers = DB::from("users as u1")
+    // 4) JOIN
+    $joinedItems = DB::from("test_items")
         ->select(
-            "u1.id as left_id",
-            "u1.name as left_name",
-            "u2.id as right_id",
-            "u2.name as right_name",
+            "test_items.name as item_name",
+            "categories.name as category_name",
         )
-        ->join("users as u2", "u1.id", Operators::LESS_THAN, "u2.id")
-        ->orderBy("u1.id", SortDirection::ASC)
+        ->join(
+            "categories",
+            "test_items.category_id",
+            Operators::EQUAL,
+            "categories.id",
+        )
+        ->orderBy("test_items.id", SortDirection::ASC)
         ->limit(5)
         ->get();
-    printBlock("4) Self JOIN demo", $joinedUsers);
+    printBlock("4) JOIN demo", $joinedItems);
 
-    // 5) GROUP BY + HAVING (aggregation by registration_date)
-    $groupedByDate = DB::from("users")
-        ->select("registration_date", "COUNT(*) as total_users")
-        ->groupBy("registration_date")
-        ->andHaving("COUNT(*)", Operators::GREATER_THAN, 0)
-        ->orderBy("registration_date", SortDirection::ASC)
+    // 5) GROUP BY + HAVING
+    $groupedByCategory = DB::from("test_items")
+        ->select("category_id", "SUM(value) as total_value")
+        ->groupBy("category_id")
+        ->andHaving("SUM(value)", Operators::GREATER_THAN, 100)
+        ->orderBy("category_id", SortDirection::ASC)
         ->get();
-    printBlock("5) Group by registration_date + having", $groupedByDate);
+    printBlock("5) Group by category + having", $groupedByCategory);
 
     // 6) HAVING with OR condition (orHaving)
-    $havingOrResults = DB::from("users")
-        ->select("registration_date", "COUNT(*) as total_users")
-        ->groupBy("registration_date")
-        ->andHaving("COUNT(*)", Operators::LESS_THAN, 0)
-        ->orHaving("COUNT(*)", Operators::GREATER_THAN_OR_EQUAL, 1)
-        ->orderBy("registration_date", SortDirection::ASC)
+    $havingOrResults = DB::from("test_items")
+        ->select("category_id", "SUM(value) as total_value")
+        ->groupBy("category_id")
+        ->andHaving("SUM(value)", Operators::LESS_THAN, 100)
+        ->orHaving("SUM(value)", Operators::GREATER_THAN, 200)
+        ->orderBy("category_id", SortDirection::ASC)
         ->get();
     printBlock("6) Group by + orHaving", $havingOrResults);
 
     // 7) LEFT JOIN / RIGHT JOIN (SQL preview)
-    $leftJoinSql = DB::from("users as u1")
-        ->select("u1.id", "u2.id as joined_id")
-        ->leftJoin("users as u2", "u1.id", Operators::EQUAL, "u2.id")
+    $leftJoinSql = DB::from("test_items")
+        ->select("test_items.id", "categories.id as category_id")
+        ->leftJoin(
+            "categories",
+            "test_items.category_id",
+            Operators::EQUAL,
+            "categories.id",
+        )
         ->limit(1)
         ->toSql();
     printBlock("7) LEFT JOIN SQL", $leftJoinSql);
 
-    $rightJoinSql = DB::from("users as u1")
-        ->select("u1.id", "u2.id as joined_id")
-        ->rightJoin("users as u2", "u1.id", Operators::EQUAL, "u2.id")
+    $rightJoinSql = DB::from("categories")
+        ->select("categories.id", "test_items.id as item_id")
+        ->rightJoin(
+            "test_items",
+            "categories.id",
+            Operators::EQUAL,
+            "test_items.category_id",
+        )
         ->limit(1)
         ->toSql();
     printBlock("8) RIGHT JOIN SQL", $rightJoinSql);
 
-    // 8) Aggregates
+    // 9) Aggregates
     $aggregates = [
-        "count(*)" => DB::from("users")->count(),
-        "sum(id)" => DB::from("users")->sum("id"),
-        "avg(id)" => DB::from("users")->avg("id"),
-        "min(id)" => DB::from("users")->min("id"),
-        "max(id)" => DB::from("users")->max("id"),
+        "count(*)" => DB::from("test_items")->count(),
+        "sum(value)" => DB::from("test_items")->sum("value"),
+        "avg(value)" => DB::from("test_items")->avg("value"),
+        "min(value)" => DB::from("test_items")->min("value"),
+        "max(value)" => DB::from("test_items")->max("value"),
     ];
     printBlock("9) Aggregates", $aggregates);
 
-    // 9) INSERT
-    $demoEmail = "quebu.demo@example.com";
-    try {
-        $newId = DB::from("users")->insert([
-            "name" => "Quebu Demo",
-            "email" => $demoEmail,
-            "registration_date" => date("Y-m-d"),
-        ]);
-        printBlock("9) Insert", "Inserted user with ID: {$newId}");
-    } catch (\PDOException $e) {
-        // SQLSTATE 23000: integrity constraint violation (e.g. duplicate key)
-        if ($e->getCode() === "23000") {
-            printBlock(
-                "9) Insert",
-                "User with email {$demoEmail} already exists.",
-            );
-        } else {
-            throw $e;
-        }
-    }
+    // 10) INSERT
+    $newId = DB::from("test_items")->insert([
+        "name" => "Quebu Demo",
+        "description" => "Inserted from example.php",
+        "value" => 200,
+        "category_id" => 1,
+    ]);
+    printBlock("10) Insert", "Inserted item with ID: {$newId}");
 
-    // 10) UPDATE (safe write with WHERE)
-    $updated = DB::from("users")
-        ->andWhere("email", Operators::EQUAL, $demoEmail)
+    // 11) UPDATE (safe write with WHERE)
+    $updated = DB::from("test_items")
+        ->andWhere("id", Operators::EQUAL, $newId)
         ->update(["name" => "Quebu Demo Updated"]);
-    printBlock("10) Update with WHERE", $updated);
+    printBlock("11) Update with WHERE", $updated);
 
-    // 11) DELETE (safe write with WHERE)
-    $deleted = DB::from("users")
-        ->andWhere("email", Operators::EQUAL, $demoEmail)
+    // 12) DELETE (safe write with WHERE)
+    $deleted = DB::from("test_items")
+        ->andWhere("id", Operators::EQUAL, $newId)
         ->delete();
-    printBlock("11) Delete with WHERE", $deleted);
+    printBlock("12) Delete with WHERE", $deleted);
 
-    // 12) Unsafe write override (disabled by default)
+    // 13) Unsafe write override (disabled by default)
     // USE WITH EXTREME CAUTION.
     // Example (commented on purpose):
-    // DB::from('users')->allowUnsafeWrites(true)->delete();
+    // DB::from('test_items')->allowUnsafeWrites(true)->delete();
     printBlock(
-        "12) Unsafe writes",
+        "13) Unsafe writes",
         "By default, update/delete without WHERE are blocked. Use allowUnsafeWrites(true) only when intentional.",
     );
 } catch (\Throwable $e) {

@@ -51,12 +51,12 @@ $dsn = sprintf(
 DB::connect($dsn, $_ENV['DB_USERNAME'] ?? null, $_ENV['DB_PASSWORD'] ?? null);
 
 // 4. Start building queries!
-$users = DB::from('users')
-    ->andWhere('registration_date', Operators::GREATER_THAN, '2023-01-01')
+$items = DB::from('test_items')
+    ->andWhere('value', Operators::GREATER_THAN, 75)
     ->orderBy('name')
     ->get();
 
-print_r($users);
+print_r($items);
 ```
 
 #### Composer Note
@@ -71,18 +71,27 @@ If your application already uses Composer, you can still include QueBu manually 
 
 **SELECT with a JOIN**
 ```php
-$posts = DB::from('posts')
-    ->select('posts.title', 'users.name as author')
-    ->join('users', 'posts.user_id', Operators::EQUAL, 'users.id')
+$items = DB::from('test_items')
+    ->select('test_items.name as item_name', 'categories.name as category_name')
+    ->join('categories', 'test_items.category_id', Operators::EQUAL, 'categories.id')
     ->limit(5)
     ->get();
 ```
 
 **INSERT, UPDATE, and DELETE**
 ```php
-DB::from('users')->insert(['name' => 'Ginevra', 'email' => 'ginevra@example.com']);
-DB::from('users')->andWhere('name', Operators::EQUAL, 'Ginevra')->update(['name' => 'Ginevra Verdi']);
-DB::from('users')->andWhere('name', Operators::EQUAL, 'Ginevra Verdi')->delete();
+$newId = DB::from('test_items')->insert([
+    'name' => 'Demo Item',
+    'description' => 'Created by QueBu',
+    'value' => 120,
+    'category_id' => 1,
+]);
+
+DB::from('test_items')->andWhere('id', Operators::EQUAL, $newId)->update([
+    'name' => 'Demo Item Updated',
+]);
+
+DB::from('test_items')->andWhere('id', Operators::EQUAL, $newId)->delete();
 ```
 
 ---
