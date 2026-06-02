@@ -20,11 +20,13 @@ This is the primary, zero-dependency method for using QueBu in any project.
 
 1.  Copy the `src` directory and the `autoload.php` file into your application.
 2.  Include the custom autoloader and start building queries.
-3.  Create your local environment file from the example template:
+3.  Copy `.env.example` to `.env` to create your local environment file:
     ```bash
     cp .env.example .env
     ```
 4.  Edit `.env` and set your database credentials (`DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, etc.).
+5.  Never commit `.env` to the repository. Keep it only in your local environment.
+6.  If you deploy the project, prefer placing `.env` outside the web root (for example, outside `public_html` on cPanel) and pass that path to `EnvLoader::load(...)`.
 
 ```php
 <?php
