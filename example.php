@@ -68,7 +68,12 @@ try {
             "test_items.name as item_name",
             "categories.name as category_name",
         )
-        ->join("categories", "test_items.category_id", "categories.id")
+        ->join(
+            "categories",
+            "test_items.category_id",
+            Operators::EQUAL,
+            "categories.id",
+        )
         ->orderBy("test_items.id", SortDirection::ASC)
         ->limit(5)
         ->get();
@@ -96,14 +101,24 @@ try {
     // 7) LEFT JOIN / RIGHT JOIN (SQL preview)
     $leftJoinSql = DB::from("test_items")
         ->select("test_items.id", "categories.id as category_id")
-        ->leftJoin("categories", "test_items.category_id", "categories.id")
+        ->leftJoin(
+            "categories",
+            "test_items.category_id",
+            Operators::EQUAL,
+            "categories.id",
+        )
         ->limit(1)
         ->toSql();
     printBlock("7) LEFT JOIN SQL", $leftJoinSql);
 
     $rightJoinSql = DB::from("categories")
         ->select("categories.id", "test_items.id as item_id")
-        ->rightJoin("test_items", "categories.id", "test_items.category_id")
+        ->rightJoin(
+            "test_items",
+            "categories.id",
+            Operators::EQUAL,
+            "test_items.category_id",
+        )
         ->limit(1)
         ->toSql();
     printBlock("8) RIGHT JOIN SQL", $rightJoinSql);
@@ -149,7 +164,10 @@ try {
     );
 } catch (\Throwable $e) {
     error_log("[Quebu example] " . $e->getMessage());
-    http_response_code(500);
+
+    if (!headers_sent()) {
+        http_response_code(500);
+    }
 
     if ($debug) {
         die("<h3>Error</h3><pre>" . $e->getMessage() . "</pre>");
