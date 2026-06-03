@@ -26,31 +26,25 @@ This is the primary, zero-dependency method for using QueBu in any project.
     ```
 4.  Edit `.env` and set your database credentials (`DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, etc.).
 5.  Never commit `.env` to the repository. Keep it only in your local environment.
-6.  If you deploy the project, prefer placing `.env` outside the web root (for example, outside `public_html` on cPanel) and pass that path to `EnvLoader::load(...)`.
+6.  If you deploy the project, prefer placing `.env` outside the web root (for example, outside `public_html` on cPanel) and pass that path to `EnvLoader::load(...)`. The loader hydrates QueBu's internal environment resolver without writing to PHP superglobals.
 
 ```php
 <?php
 require __DIR__ . '/autoload.php';
 
 use Pindinelli\Quebu\DB;
+use Pindinelli\Quebu\DatabaseConfig;
 use Pindinelli\Quebu\EnvLoader;
 use Pindinelli\Quebu\Enums\Operators;
 
-// 1. Load environment variables from a .env file
+// 1. Load environment variables from a .env file into the internal resolver
 EnvLoader::load(__DIR__);
 
-// 2. Build the DSN string
-$dsn = sprintf(
-    "%s:host=%s;port=%s;dbname=%s;charset=%s",
-    $_ENV['DB_CONNECTION'] ?? 'mysql',
-    $_ENV['DB_HOST'] ?? '127.0.0.1',
-    $_ENV['DB_PORT'] ?? '3306',
-    $_ENV['DB_DATABASE'] ?? null,
-    $_ENV['DB_CHARSET'] ?? 'utf8mb4'
-);
+// 2. Build the database config from the environment
+$config = DatabaseConfig::fromEnvironment();
 
 // 3. Connect to the database
-DB::connect($dsn, $_ENV['DB_USERNAME'] ?? null, $_ENV['DB_PASSWORD'] ?? null);
+DB::connect($config->dsn, $config->user, $config->password);
 
 // 4. Start building queries!
 $items = DB::from('test_items')

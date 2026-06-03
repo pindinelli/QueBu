@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Pindinelli\Quebu\DB;
 use Pindinelli\Quebu\DatabaseConfig;
+use Pindinelli\Quebu\EnvResolver;
 use Pindinelli\Quebu\EnvLoader;
 use Pindinelli\Quebu\Enums\Operators;
 use Pindinelli\Quebu\Enums\SortDirection;
@@ -21,7 +22,7 @@ require __DIR__ . "/autoload.php";
 
 EnvLoader::load(__DIR__);
 
-$debug = ($_ENV["APP_DEBUG"] ?? "0") === "1";
+$debug = EnvResolver::get("APP_DEBUG", "0") === "1";
 ini_set("display_errors", $debug ? "1" : "0");
 ini_set("display_startup_errors", $debug ? "1" : "0");
 error_reporting(E_ALL);

@@ -72,58 +72,14 @@ class DatabaseConfig
      */
     public static function fromEnvironment(): self
     {
-        $driver = $_ENV["DB_CONNECTION"] ?? null;
-        $host = $_ENV["DB_HOST"] ?? null;
-        $port = $_ENV["DB_PORT"] ?? null;
-        $dbname = $_ENV["DB_DATABASE"] ?? null;
-        $user = $_ENV["DB_USERNAME"] ?? null;
-        $password = $_ENV["DB_PASSWORD"] ?? null;
-        $charset = $_ENV["DB_CHARSET"] ?? null;
-
-        if (!$driver) {
-            throw new InvalidArgumentException(
-                "The DB_CONNECTION environment variable is not set.",
-            );
-        }
-
-        if (!$host) {
-            throw new InvalidArgumentException(
-                "The DB_HOST environment variable is not set.",
-            );
-        }
-
-        if (!$port) {
-            throw new InvalidArgumentException(
-                "The DB_PORT environment variable is not set.",
-            );
-        }
-
-        if (!$dbname) {
-            throw new InvalidArgumentException(
-                "The DB_DATABASE environment variable is not set.",
-            );
-        }
-
-        if (!$user) {
-            throw new InvalidArgumentException(
-                "The DB_USERNAME environment variable is not set.",
-            );
-        }
-
-        if (!$charset) {
-            throw new InvalidArgumentException(
-                "The DB_CHARSET environment variable is not set.",
-            );
-        }
-
         return new self(
-            $driver,
-            $host,
-            $port,
-            $dbname,
-            $user,
-            $password,
-            $charset,
+            EnvResolver::require("DB_CONNECTION"),
+            EnvResolver::require("DB_HOST"),
+            EnvResolver::require("DB_PORT"),
+            EnvResolver::require("DB_DATABASE"),
+            EnvResolver::require("DB_USERNAME"),
+            EnvResolver::get("DB_PASSWORD"),
+            EnvResolver::require("DB_CHARSET"),
         );
     }
 }

@@ -2,8 +2,10 @@
 
 namespace Pindinelli\Quebu\Tests;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Pindinelli\Quebu\DB;
+use Pindinelli\Quebu\DatabaseConfig;
 use Pindinelli\Quebu\Enums\Operators;
 use Pindinelli\Quebu\Enums\SortDirection;
 
@@ -11,71 +13,19 @@ class QuebuTest extends TestCase
 {
     protected function setUp(): void
     {
+        \Pindinelli\Quebu\EnvResolver::clear();
         \Pindinelli\Quebu\EnvLoader::load(__DIR__ . "/..");
-        [
-            "DB_CONNECTION" => $driver,
-            "DB_HOST" => $host,
-            "DB_PORT" => $port,
-            "DB_DATABASE" => $dbname,
-            "DB_USERNAME" => $user,
-            "DB_PASSWORD" => $password,
-            "DB_CHARSET" => $charset,
-        ] = $_ENV + [
-            "DB_CONNECTION" => null,
-            "DB_HOST" => null,
-            "DB_PORT" => null,
-            "DB_DATABASE" => null,
-            "DB_USERNAME" => null,
-            "DB_PASSWORD" => null,
-            "DB_CHARSET" => null,
-        ];
-
-        if (!$driver) {
+        try {
+            $config = DatabaseConfig::fromEnvironment();
+        } catch (InvalidArgumentException $exception) {
             throw new InvalidArgumentException(
-                "The DB_CONNECTION environment variable is not set for tests.",
+                $exception->getMessage() . " for tests.",
+                previous: $exception,
             );
         }
 
-        if (!$host) {
-            throw new InvalidArgumentException(
-                "The DB_HOST environment variable is not set for tests.",
-            );
-        }
+        DB::connect($config->dsn, $config->user, $config->password);
 
-        if (!$port) {
-            throw new InvalidArgumentException(
-                "The DB_PORT environment variable is not set for tests.",
-            );
-        }
-
-        if (!$dbname) {
-            throw new InvalidArgumentException(
-                "The DB_DATABASE environment variable is not set for tests.",
-            );
-        }
-
-        if (!$user) {
-            throw new InvalidArgumentException(
-                "The DB_USERNAME environment variable is not set for tests.",
-            );
-        }
-
-        if (!$charset) {
-            throw new InvalidArgumentException(
-                "The DB_CHARSET environment variable is not set for tests.",
-            );
-        }
-
-        $dsn = sprintf(
-            "%s:host=%s;port=%s;dbname=%s;charset=%s",
-            $driver,
-            $host,
-            $port,
-            $dbname,
-            $charset,
-        );
-
-        DB::connect($dsn, $user, $password);
         $pdo = DB::getConnection();
 
         if ($pdo) {
