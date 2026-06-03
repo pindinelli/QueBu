@@ -202,12 +202,7 @@ class QuebuTest extends TestCase
                 "test_items.name as item_name",
                 "categories.name as category_name",
             )
-            ->join(
-                "categories",
-                "test_items.category_id",
-                Operators::EQUAL,
-                "categories.id",
-            )
+            ->join("categories", "test_items.category_id", "categories.id")
             ->andWhere("test_items.id", Operators::EQUAL, 1)
             ->first();
 
@@ -223,12 +218,7 @@ class QuebuTest extends TestCase
                 "test_items.name as item_name",
                 "categories.name as category_name",
             )
-            ->leftJoin(
-                "categories",
-                "test_items.category_id",
-                Operators::EQUAL,
-                "categories.id",
-            )
+            ->leftJoin("categories", "test_items.category_id", "categories.id")
             ->andWhere("test_items.id", Operators::EQUAL, 1)
             ->first();
 
@@ -244,12 +234,7 @@ class QuebuTest extends TestCase
                 "categories.name as category_name",
                 "test_items.name as item_name",
             )
-            ->rightJoin(
-                "test_items",
-                "categories.id",
-                Operators::EQUAL,
-                "test_items.category_id",
-            )
+            ->rightJoin("test_items", "categories.id", "test_items.category_id")
             ->andWhere("test_items.id", Operators::EQUAL, 1)
             ->first();
 

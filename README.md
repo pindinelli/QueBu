@@ -69,7 +69,7 @@ If your application already uses Composer, you can still include QueBu manually 
 ```php
 $items = DB::from('test_items')
     ->select('test_items.name as item_name', 'categories.name as category_name')
-    ->join('categories', 'test_items.category_id', Operators::EQUAL, 'categories.id')
+    ->join('categories', 'test_items.category_id', 'categories.id')
     ->limit(5)
     ->get();
 ```
